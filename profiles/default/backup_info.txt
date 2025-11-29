@@ -1,0 +1,7 @@
+Hostname: MacBook-Air
+Last backup: 2025-11-29 08:05:40
+User: user
+macOS version: 26.2
+Homebrew version: Homebrew 5.0.3-60-g143769a
+Profile: default
+Total packages: 91
