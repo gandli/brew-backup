@@ -1,7 +1,7 @@
 Hostname: MacBook-Air
-Last backup: 2025-12-26 19:16:48
+Last backup: 2026-01-01 09:45:17
 User: user
 macOS version: 26.3
-Homebrew version: Homebrew 5.0.7-86-ga3338c7
+Homebrew version: Homebrew 5.0.8-15-g7543440
 Profile: default
-Total packages: 106
+Total packages: 110
