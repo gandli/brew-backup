@@ -19,7 +19,6 @@ brew "act"
 brew "aria2"
 brew "atuin"
 brew "bat"
-brew "batt"
 brew "btop"
 brew "chsrc"
 brew "copilot", link: false
