@@ -22,7 +22,6 @@ brew "bat"
 brew "batt"
 brew "btop"
 brew "chsrc"
-brew "cliproxyapi"
 brew "copilot", link: false
 brew "curl"
 brew "dagu"
