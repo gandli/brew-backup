@@ -1,13 +1,13 @@
 {
     "profile": "default",
     "hostname": "MacBook-Air",
-    "last_backup": "2026-01-26T19:01:41+08:00",
+    "last_backup": "2026-02-01T13:23:13+08:00",
     "user": "user",
     "macos_version": "26.3",
-    "homebrew_version": "Homebrew 5.0.12-11-g4099c46",
+    "homebrew_version": "Homebrew 5.0.12-64-ge2799ab",
     "package_count": {
         "brew": 59,
-        "cask": 61,
+        "cask": 60,
         "mas": 1
     }
 }
