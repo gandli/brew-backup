@@ -1,7 +1,7 @@
-Hostname: MacBook-Air
-Last backup: 2026-02-01 13:23:10
+Hostname: users-Mac-mini
+Last backup: 2026-02-16 13:17:44
 User: user
 macOS version: 26.3
-Homebrew version: Homebrew 5.0.12-64-ge2799ab
+Homebrew version: Homebrew 5.0.14
 Profile: default
-Total packages: 120
+Total packages: 136
