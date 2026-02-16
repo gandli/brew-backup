@@ -1,0 +1,147 @@
+name: Update README
+
+on:
+  push:
+    paths:
+      - 'profiles/**/Brewfile'
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Count packages
+        id: count
+        run: |
+          BREWFILE="profiles/default/Brewfile"
+          if [ ! -f "$BREWFILE" ]; then
+            echo "No Brewfile found"
+            exit 0
+          fi
+          TAPS=$(grep -c "^tap " "$BREWFILE" || echo 0)
+          BREWS=$(grep -c "^brew " "$BREWFILE" || echo 0)
+          CASKS=$(grep -c "^cask " "$BREWFILE" || echo 0)
+          MAS=$(grep -c "^mas " "$BREWFILE" || echo 0)
+          TOTAL=$((TAPS + BREWS + CASKS + MAS))
+          echo "taps=$TAPS" >> "$GITHUB_OUTPUT"
+          echo "brews=$BREWS" >> "$GITHUB_OUTPUT"
+          echo "casks=$CASKS" >> "$GITHUB_OUTPUT"
+          echo "mas=$MAS" >> "$GITHUB_OUTPUT"
+          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
+
+      - name: Get device info
+        id: devices
+        run: |
+          TABLE=""
+          for dir in profiles/*/; do
+            profile=$(basename "$dir")
+            # Find latest Brewfile commit
+            LAST_DATE=$(git log -1 --format="%cs" -- "${dir}Brewfile" 2>/dev/null || echo "unknown")
+            LAST_MSG=$(git log -1 --format="%s" -- "${dir}Brewfile" 2>/dev/null || echo "")
+            # Extract device name from commit message
+            DEVICE=$(echo "$LAST_MSG" | sed -n "s/.*from \(.*\) [-(].*/\1/p" | sed 's/ *$//')
+            [ -z "$DEVICE" ] && DEVICE=$(echo "$LAST_MSG" | sed -n "s/.*from \(.*\)/\1/p" | sed 's/ *$//')
+            [ -z "$DEVICE" ] && DEVICE="unknown"
+            TABLE="${TABLE}| ${DEVICE} | ${LAST_DATE} | ${profile} |\n"
+          done
+          echo "table<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$TABLE" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Update README
+        run: |
+          cat > README.md << 'HEADER'
+          # 🍺 brew-backup
+
+          我的 Homebrew 软件包备份，由 [brew-sync](https://github.com/kyungw00k/brew-sync) 管理。
+
+          ## 当前配置
+          HEADER
+
+          # Remove leading spaces from heredoc
+          sed -i 's/^          //' README.md
+
+          cat >> README.md << EOF
+
+          | 类型 | 数量 |
+          |------|------|
+          | Tap | ${{ steps.count.outputs.taps }} |
+          | Formula | ${{ steps.count.outputs.brews }} |
+          | Cask | ${{ steps.count.outputs.casks }} |
+          | **总计** | **${{ steps.count.outputs.total }}** |
+
+          ## 快速开始
+
+          ### 1. 安装 brew-sync
+
+          \`\`\`bash
+          curl -fsSL https://raw.githubusercontent.com/kyungw00k/brew-sync/main/install.sh | bash
+          \`\`\`
+
+          ### 2. 克隆并恢复
+
+          \`\`\`bash
+          git clone https://github.com/gandli/brew-backup ~/.brew-sync-git
+
+          # 配置存储
+          mkdir -p ~/.config/brew-sync
+          cat > ~/.config/brew-sync/last_storage << 'CONF'
+          method=git
+          path="\$HOME/.brew-sync-git"
+          CONF
+          echo "default" > ~/.config/brew-sync/default_profile
+
+          # 恢复
+          brew-sync restore
+          \`\`\`
+
+          > 💡 也可以直接用 Brewfile：
+          > \`\`\`bash
+          > cd ~/.brew-sync-git/profiles/default && brew bundle install
+          > \`\`\`
+
+          ## 日常使用
+
+          \`\`\`bash
+          # 备份
+          brew-sync backup
+
+          # 恢复（先预览再执行）
+          brew-sync restore --dry-run
+          brew-sync restore
+
+          # 查看状态 / 历史
+          brew-sync status
+          brew-sync history
+
+          # 回滚到历史版本
+          brew-sync rollback
+
+          # 编辑软件包列表
+          brew-sync edit
+          \`\`\`
+
+          ## 设备
+
+          | 设备 | 最后备份 | 配置 |
+          |------|----------|------|
+          ${{ steps.devices.outputs.table }}
+
+          ---
+
+          Powered by [brew-sync](https://github.com/kyungw00k/brew-sync) · MIT License
+          EOF
+
+          sed -i 's/^          //' README.md
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git diff --quiet README.md && echo "No changes" && exit 0
+          git add README.md
+          git commit -m "docs: auto-update README [skip ci]"
+          git push
