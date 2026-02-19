@@ -1,13 +1,13 @@
 {
     "profile": "default",
     "hostname": "users-Mac-mini",
-    "last_backup": "2026-02-16T13:17:44+08:00",
+    "last_backup": "2026-02-19T11:06:50+08:00",
     "user": "user",
     "macos_version": "26.3",
     "homebrew_version": "Homebrew 5.0.14",
     "package_count": {
-        "brew": 79,
-        "cask": 57,
+        "brew": 89,
+        "cask": 59,
         "mas": 0
     }
 }
